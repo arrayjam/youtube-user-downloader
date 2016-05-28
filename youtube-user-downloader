@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+
+var inquirer = require("inquirer"),
+    exec = require("child_process").exec;
+
+if (process.argv.length !== 3) {
+  console.log("Usage: \033[1myoutube-user-downloader\033[0m [youtube-username]\n\nChoose and download a YouTube user's videos using youtube-dl.");
+
+  process.exit(1);
+}
+
+var youtubeUser = process.argv[2].trim();
+
+exec("command -v youtube-dl", function(err) {
+  if (err) {
+    console.log("This script uses youtube-dl to download videos.\nFor download options, visit https://rg3.github.io/youtube-dl/download.html\nGood luck!");
+    process.exit(1);
+  }
+
+  console.log("Fetching video index for youtube user \"" + youtubeUser + "\"...");
+  exec("youtube-dl ytuser:" + youtubeUser + " --flat-playlist -J", function (error, stdout) {
+    var archive = JSON.parse(stdout);
+    var entries = archive.entries;
+
+    inquirer.prompt([{
+      type: "checkbox",
+      message: "Select which " + youtubeUser + "'s videos to download",
+      name: "videos",
+      pageSize: 10,
+      choices: entries.map(function(video) {
+        return {
+          name: video.title,
+          value: video.id,
+        };
+      }),
+    }]).then(function(answers) {
+      var ids = answers.videos;
+      var download = function (id) { return "youtube-dl -o '%(title)s.%(ext)s' " + id; };
+      var downloadCommand = ids.map(download).join(" && ");
+      var downloadProcess = exec(downloadCommand);
+      downloadProcess.stdout.pipe(process.stdout);
+      downloadProcess.on("exit", function() { console.log("Have a nice day!"); });
+    });
+  });
+});
+

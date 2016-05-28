@@ -1,0 +1,21 @@
+{
+  "name": "youtube-user-downloader",
+  "version": "1.0.0",
+  "description": "Choose and download a YouTube user's videos using youtube-dl.",
+  "homepage": "https://github.com/arrayjam/youtube-user-downloader",
+  "license": "MIT",
+  "author": {
+    "name": "Yuri Feldman",
+    "url": "http://yuri.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arrayjam/youtube-user-downloader.git"
+  },
+  "bin": {
+    "youtube-user-downloader": "./youtube-user-downloader"
+  },
+  "dependencies": {
+    "inquirer": "^1.0.2"
+  }
+}
